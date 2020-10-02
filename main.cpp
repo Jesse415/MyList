@@ -4,6 +4,8 @@
 
 int ErrorCheck();
 
+int CheckForNeg(int Value);
+
 class MyList {
 
 private:
@@ -15,7 +17,7 @@ private:
     int BinarySearch(int Value) {                   // this function is private because it should only be called by Search()
         int Left = 1, Middle, Right;
 
-        Right = IntCount - 1;
+        Right = IntCount;
         Middle = (Left + Right) / 2;
 
         while (Left <= Right) {
@@ -67,7 +69,7 @@ public:
     int Search(int Value) {                         // search for value passed return index
         if (SortedList) {
             return BinarySearch(Value);
-        } else if (!SortedList) {
+        } else {
             for (int i = 1; i <= MaxSize; i++) {
                 if (IntArray[i] == Value) {
                     return i;
@@ -141,16 +143,17 @@ public:
 
     bool Delete(int Value) {
         int i = Search(Value);                                   //call search function, receive the index to remove
-        if (i > 0) {
-            for (i; i < IntCount; i++) {
-                IntArray[i] = IntArray[i + 1];                  //replace the value with proceeding value
+        if (SortedList) {
+            if (i > 0) {
+                for (i; i < IntCount; i++) {
+                    IntArray[i] = IntArray[i + 1];
+                }
+                IntCount--;
             }
-            IntCount--;
-            return true;
         } else {
-            std::cout << "Error. Value not removed!" << std::endl;
-            return false;
+            IntArray[i] = IntArray[IntCount--];
         }
+        return true;
     }
 };
 
@@ -169,9 +172,11 @@ int main() {
             || (strcmp(Change, "Y")) == 0
             || (strcmp(Change, "y")) == 0) {
 
-            std::cout << "What number would you like to Change it to? " << std::endl;;
+            std::cout << "What number would you like to Change it to? " << std::endl;
 
-            NumChange = ErrorCheck();
+            NumChange = ErrorCheck();               //error checking for integer
+
+            NumChange = CheckForNeg(NumChange);     //error checking for positive integer
 
             ML1 = MyList(NumChange);
             ValidStr = true;
@@ -233,7 +238,7 @@ int main() {
 
 //function to check all std::cin for proper integers
 
-int ErrorCheck(){
+int ErrorCheck() {
     int Check;
     while (!(std::cin >> Check)) {
         std::cin.clear();
@@ -241,4 +246,15 @@ int ErrorCheck(){
         std::cout << "Your input is not valid! Try again!" << std::endl;
     }
     return Check;
+}
+
+//function checking for negative value input for list size
+
+int CheckForNeg(int Value) {
+    if (Value <= 0) {
+        while (Value <= 0) {
+            std::cout << "Your input can not be a negative. Try again." << std::endl;
+            Value = ErrorCheck();
+        }
+    }
 }
